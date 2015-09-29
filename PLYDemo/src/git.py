@@ -7,7 +7,7 @@ import subprocess
 
 if sys.argv[1]:
     subprocess.call(["git","pull"])
-    subprocess.call(["git","commit -m "+ sys.argv[1] +""])
-    subprocess.call(["git","push origin master"])
+    subprocess.call(["git","commit", "-m", '"'+ sys.argv[1] +'"'])
+    subprocess.call(["git","push", "origin", "master"])
 else:
     print("Enter commit git!")
