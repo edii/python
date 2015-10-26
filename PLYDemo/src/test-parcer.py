@@ -8,7 +8,9 @@ import os
 import io
 import redis
 import mysql.connector as _m
+import urllib.request
 
+# MAGIC METHODS
 class Parser:
     data = {}
     #args = {}
@@ -38,7 +40,17 @@ class Parser:
         if self.data[item]:
             del self.data[item]
 
-class Child(Parser):
+# PRCER
+class parceURL():
+    _parce = ""
+    def setUrl(self, url_http="http://google.com/"):
+        self._parce = urllib.request.urlopen(url_http).read()
+
+    def parce(self):
+        print(self._parce)
+
+#MYSQL
+class Child(Parser, parceURL):
     def _mysqlTest(self):
         #pass
         # Open database connection
@@ -88,6 +100,11 @@ def main():
     p.getResults()
 
     p._mysqlTest()
+
+    """----------- PARCE URL --------------"""
+    p.setUrl()
+    p.parce()
+
     """----------- OK LOAD MAIN --------------"""
     print("--END LOAD MAIN--")
 
