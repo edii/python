@@ -9,12 +9,14 @@ import io
 import redis
 import mysql.connector as _m
 import urllib.request
+from html.parser import HTMLParser
+from html.entities import name2codepoint
+
+from bs4 import BeautifulSoup
 
 # MAGIC METHODS
 class Parser:
     data = {}
-    #args = {}
-    #kwargs = {}
 
     def __init__(self, *args, **kwargs):
         self.args = args
@@ -24,11 +26,11 @@ class Parser:
         self.args = args
         self.kwargs = kwargs
 
-        print(args)
-        print(kwargs)
+        #print(args)
+        #print(kwargs)
 
     def __setattr__(self, key, value):
-        print("setattr: key: {0}, value={1}", key, value)
+        #print("setattr: key: {0}, value={1}", key, value)
         if not key in ['data']:
             self.data[key]=value
 
@@ -41,13 +43,40 @@ class Parser:
             del self.data[item]
 
 # PRCER
-class parceURL():
-    _parce = ""
-    def setUrl(self, url_http="http://google.com/"):
-        self._parce = urllib.request.urlopen(url_http).read()
+#class MyHTMLParser(HTMLParser):
+    #def handle_starttag(self, tag, attrs):
+     #   if tag == 'h2':
+     #       print("Start tag:", tag)
+     #       print('See h2 >>')
+     #       print(attrs)
 
-    def parce(self):
-        print(self._parce)
+    #def handle_endtag(self, tag):
+    #    print("End tag  :", tag)
+
+    #def handle_data(self, data):
+    #    print("Data     :", data)
+
+    #def handle_comment(self, data):
+    #    print("Comment  :", data)
+
+    #def handle_entityref(self, name):
+    #    c = chr(name2codepoint[name])
+    #    print("Named ent:", c)
+
+    #def handle_charref(self, name):
+    #    if name.startswith('x'):
+    #        c = chr(int(name[1:], 16))
+    #    else:
+    #        c = chr(int(name))
+    #    print("Num ent  :", c)
+
+   # def handle_decl(self, data):
+    #    print("Decl     :", data)
+
+
+class parceURL():
+    def setUrl(self, url_http="http://google.com/"):
+       self._parce = urllib.request.urlopen(url_http).read().decode("utf-8")
 
 #MYSQL
 class Child(Parser, parceURL):
@@ -99,11 +128,34 @@ def main():
     print(p.x, p.c)
     p.getResults()
 
+    """----------- MYSQL --------------"""
     p._mysqlTest()
 
     """----------- PARCE URL --------------"""
-    p.setUrl()
-    p.parce()
+    p.setUrl("http://college-writers.com/")
+
+    print("-------------HTML READ INIT ----------------")
+    #phtml = MyHTMLParser()
+    #phtml.feed(p._parce)
+    #phtml.close()
+
+    """----------- PARCE URL v2--------------"""
+    bhtml = BeautifulSoup(p._parce, 'html.parser')
+    h1 = bhtml.find_all('h1')
+    print ("- OUTPUT <H1> (len:{0}) -".format( len(h1) ))
+    for _h1 in h1:
+        print(_h1)
+
+    h2 = bhtml.find_all('h2')
+    print("- OUTPUT <H2> (len:{0})-".format( len(h2) ))
+    for _h2 in h2:
+        print(_h2)
+
+    print("----------------INIT PARCER FEAD ---------------");
+
+    #phtml.feed(p.getUrl())
+    #phtml.close()
+    #p.parce()
 
     """----------- OK LOAD MAIN --------------"""
     print("--END LOAD MAIN--")
