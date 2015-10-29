@@ -4,7 +4,7 @@ import sys
 import os
 
 class worker_pay:
-    version = "1.2.4"
+    version = "0.1"
     
     def __init__(self):
         self.data = {}
