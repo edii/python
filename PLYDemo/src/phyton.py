@@ -2,7 +2,11 @@
 from math import *
 import sys
 import os
-import classTest
+
+try:
+    import classTest
+except ImportError:
+    pass
 
 def ask_ok(promt, resipe = 4, msg = "Yes or no, asked"):
     while True:
@@ -13,8 +17,9 @@ def ask_ok(promt, resipe = 4, msg = "Yes or no, asked"):
         if resipe < 0:
             raise IOError('refusenik error!')
         print(msg)
-print (sys.argv)
-print(sys.argv[1])
+
+#print (sys.argv)
+#print(sys.argv[1])
 #print(os.system("date"))
 
 x = classTest.worker_pay()
