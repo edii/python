@@ -35,4 +35,7 @@ print(_f)
 l =  x.list_all()
 print(l)
 
+print(sys.path[:])
+print(sys.modules)
+
 ask_ok('Doy want start?')
