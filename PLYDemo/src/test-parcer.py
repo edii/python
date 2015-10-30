@@ -225,7 +225,9 @@ def main():
     """----------- OK LOAD MAIN --------------"""
     print("--END LOAD MAIN--")
 
-main()
+
+if __name__ == '__main__':
+    main()
 
 # r = redis.StrictRedis(host="127.0.0.1",port=6379,db=0)
 # if r.set("test",10):
@@ -233,3 +235,5 @@ main()
 #
 # r.set("test", 11)
 # print(r.get("test"))
+
+__version__ = '0.1'
