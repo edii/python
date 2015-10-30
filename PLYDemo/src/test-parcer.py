@@ -3,6 +3,7 @@ __author__ = 'sergey'
 #! /usr/bin/env python3.4
 from math import *
 import sys
+import getopt
 from subprocess import call
 import os
 import io
@@ -132,8 +133,29 @@ class Child(Parser, parceURL):
 
 
     def getUrlValue(self):
-        if len(self.args) == 3 and self.args[1] == '-u':
-            return self.args[2]
+        self.url = False
+        self.verbose = False
+        try:
+            self.options, self.remainder = getopt.getopt(self.args[1:], 'u:v', ['url=',
+                                                                                'verbose',
+                                                                                'version=',
+                                                                                ])
+        except getopt.GetoptError:
+            print('test.py -u <inputpath>')
+            sys.exit(2)
+
+        for opt, arg in self.options:
+            if opt in ('-u', '--url'):
+                self.url = arg
+            elif opt in ('-v', '--verbose'):
+                self.verbose = True
+            elif opt == '--version':
+                self.version = arg
+
+        return self.url
+
+        #if len(self.args) == 3 and self.args[1] == '-u':
+        #    return self.args[2]
 
 
 def main():
