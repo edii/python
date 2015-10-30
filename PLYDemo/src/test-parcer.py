@@ -80,13 +80,25 @@ class parceURL():
 
 #MYSQL
 class Child(Parser, parceURL):
+
+    def _connected(self):
+        self.db = _m.connect(user="root",password="password",host="localhost",database="python" )
+
+    def _close(self):
+        self.db.close()
+
+    def saveSites(self, site):
+        pass
+        #if(site):
+
+
     def _mysqlTest(self):
         #pass
         # Open database connection
-        db = _m.connect(user="root",password="password",host="localhost",database="python" )
+        #db = _m.connect(user="root",password="password",host="localhost",database="python" )
 
         # prepare a cursor object using cursor() method
-        cursor = db.cursor()
+        cursor = self.db.cursor()
 
         # execute SQL query using execute() method.
         cursor.execute("SELECT VERSION()")
@@ -106,33 +118,58 @@ class Child(Parser, parceURL):
             print(p_price)
 
         # disconnect from server
-        db.close()
+        #self.db.close()
 
     def getResults(self):
         print('getResults')
         print(self.args, self.kwargs)
-        for arg in self.args:
-            print("Params init: {0}", arg)
-        for key in self.kwargs:
-            print("Params init: {0}:{1}", key, self.kwargs[key])
+        if(self.args):
+            for arg in self.args:
+                print("Params init:", self.args.index(arg), arg)
+        if(self.kwargs):
+            for key in self.kwargs:
+                print("Params init: {0}:{1}", key, self.kwargs[key])
+
+
+    def getUrlValue(self):
+        if len(self.args) == 3 and self.args[1] == '-u':
+            return self.args[2]
 
 
 def main():
     p = False
     """----------- START LOAD MAIN --------------"""
     print("--LOAD MAIN--")
-    p = Child(*[1,2], **{'One':1,'Two':2})
+
+    #print(input("-- TEST SET -- >> "))
+
+    #print(sys.argv[1],sys.argv[2], len(sys.argv))
+
+    p = Child(*sys.argv)
+
+    #**{'One':1,'Two':2}
+
     #p.__call__(*[1,2], **{'One':1,'Two':2})
     p.x = 10
     p.c = 100
     print(p.x, p.c)
+
+    """----------- OUT PUT RESULTS --------------"""
+    print("----------- OUT PUT RESULTS --------------")
     p.getResults()
 
     """----------- MYSQL --------------"""
+    print("----------- MYSQL --------------")
+    p._connected()
+
     p._mysqlTest()
 
+    p._close()
+
     """----------- PARCE URL --------------"""
-    p.setUrl("http://college-writers.com/")
+    print("----------- PARCE INIT --------------")
+    url = p.getUrlValue()
+    p.setUrl( url )
 
     print("-------------HTML READ INIT ----------------")
     #phtml = MyHTMLParser()
@@ -151,7 +188,35 @@ def main():
     for _h2 in h2:
         print(_h2)
 
-    print("----------------INIT PARCER FEAD ---------------");
+    h3 = bhtml.find_all('h3')
+    print("- OUTPUT <H3> (len:{0})-".format( len(h3) ))
+    for _h3 in h3:
+        print(_h3)
+
+    h4 = bhtml.find_all('h4')
+    print("- OUTPUT <H4> (len:{0})-".format( len(h4) ))
+    for _h4 in h4:
+        print(_h4)
+
+    a = bhtml.find_all('a')
+    print("- OUTPUT <a> (len:{0})-".format( len(a) ))
+
+    i = 1
+    _resA = []
+
+    for _a in a:
+        if(_a.get('href') != "#"):
+            _resA.append(_a.get('href'))
+            print('.', end=' ')
+            if(i == len(a)):
+                print('\n')
+                print(_resA)
+        #print(_a)
+        #print(_a.get('href'))
+        i+=1
+
+
+    #print("----------------INIT PARCER FEAD ---------------");
 
     #phtml.feed(p.getUrl())
     #phtml.close()
