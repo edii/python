@@ -76,8 +76,9 @@ class Parser:
 
 
 class parceURL():
-    def setUrl(self, url_http="http://google.com/"):
-       self._parce = urllib.request.urlopen(url_http).read().decode("utf-8")
+    def setUrl(self, url_http="http://i.ua/"):
+        self._parce = urllib.request.urlopen(url_http).read()
+        #.decode("utf-8")
 
 #MYSQL
 class Child(Parser, parceURL):
@@ -140,17 +141,18 @@ class Child(Parser, parceURL):
                                                                                 'verbose',
                                                                                 'version=',
                                                                                 ])
+            if(self.options):
+                for opt, arg in self.options:
+                    if opt in ('-u', '--url'):
+                        self.url = arg
+                    elif opt in ('-v', '--verbose'):
+                        self.verbose = True
+                    elif opt == '--version':
+                        self.version = arg
+
         except getopt.GetoptError:
             print('test.py -u <inputpath>')
             sys.exit(2)
-
-        for opt, arg in self.options:
-            if opt in ('-u', '--url'):
-                self.url = arg
-            elif opt in ('-v', '--verbose'):
-                self.verbose = True
-            elif opt == '--version':
-                self.version = arg
 
         return self.url
 
@@ -191,7 +193,10 @@ def main():
     """----------- PARCE URL --------------"""
     print("----------- PARCE INIT --------------")
     url = p.getUrlValue()
-    p.setUrl( url )
+    if(url):
+        p.setUrl(url)
+    else:
+        p.setUrl()
 
     print("-------------HTML READ INIT ----------------")
     #phtml = MyHTMLParser()
