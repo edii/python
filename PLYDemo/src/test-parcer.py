@@ -8,7 +8,10 @@ from subprocess import call
 import os
 import io
 import redis
+
+from datetime import date, datetime, timedelta
 import mysql.connector as _m
+
 import urllib.request
 from html.parser import HTMLParser
 from html.entities import name2codepoint
@@ -90,8 +93,19 @@ class Child(Parser, parceURL):
         self.db.close()
 
     def saveSites(self, site):
-        pass
-        #if(site):
+        if(site):
+            cursor = self.db.cursor()
+
+            # tomorrow = datetime.now().date() + timedelta(days=1)
+            # emp_no = cursor.lastrowid
+
+            try:
+                cursor.execute("""INSERT INTO parcer_sites SET id = NULL, domain = %(domain)s""", {'domain': site})
+                self.db.commit()
+            except:
+                self.db.rollback()
+
+            cursor.close()
 
 
     def _mysqlTest(self):
@@ -185,9 +199,7 @@ def main():
     """----------- MYSQL --------------"""
     print("----------- MYSQL --------------")
     p._connected()
-
     p._mysqlTest()
-
     p._close()
 
     """----------- PARCE URL --------------"""
@@ -197,6 +209,12 @@ def main():
         p.setUrl(url)
     else:
         p.setUrl()
+
+    # =================== SAVE MYSQL ==============
+    p._connected()
+    if(url):
+        p.saveSites(url)
+    p._close()
 
     print("-------------HTML READ INIT ----------------")
     #phtml = MyHTMLParser()
