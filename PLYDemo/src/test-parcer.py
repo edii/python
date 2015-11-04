@@ -18,6 +18,37 @@ from html.entities import name2codepoint
 
 from bs4 import BeautifulSoup
 
+# =========== // CLASS DATABASES
+class Database:
+
+    host = 'localhost'
+    user = 'root'
+    password = '123'
+    db = 'test'
+
+    def __init__(self):
+        self.connection = _m.connect(self.host, self.user, self.password, self.db)
+        self.cursor = self.connection.cursor()
+
+    def insert(self, query):
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+        except:
+            self.connection.rollback()
+
+
+
+    def query(self, query):
+        cursor = self.connection.cursor( _m.cursors.DictCursor )
+        cursor.execute(query)
+
+        return cursor.fetchall()
+
+    def __del__(self):
+        self.connection.close()
+# ============ // END
+
 # MAGIC METHODS
 class Parser:
     data = {}
@@ -94,18 +125,36 @@ class Child(Parser, parceURL):
 
     def saveSites(self, site):
         if(site):
+            psId = 0
             cursor = self.db.cursor()
 
             # tomorrow = datetime.now().date() + timedelta(days=1)
             # emp_no = cursor.lastrowid
 
+            cursor.execute("SELECT ps.id as ps_id FROM `parcer_sites` as ps WHERE domain = %(domain)s", {'domain': site})
+            psOne = cursor.fetchone()
             try:
-                cursor.execute("""INSERT INTO parcer_sites SET id = NULL, domain = %(domain)s""", {'domain': site})
-                self.db.commit()
+                ps_id = psOne[0]
             except:
-                self.db.rollback()
+                ps_id = 0
 
-            cursor.close()
+            if not ps_id:
+                try:
+                    cursor.execute("""INSERT INTO parcer_sites SET id = NULL, domain = %(domain)s""", {'domain': site})
+                    self.db.commit()
+
+                    if cursor.lastrowid:
+                        print('last insert id', cursor.lastrowid)
+                        psId = cursor.lastrowid
+                    else:
+                        print('last insert id not found')
+
+                except:
+                    self.db.rollback()
+            else:
+                psId = ps_id
+
+            return psId
 
 
     def _mysqlTest(self):
@@ -213,7 +262,8 @@ def main():
     # =================== SAVE MYSQL ==============
     p._connected()
     if(url):
-        p.saveSites(url)
+        psId = p.saveSites(url)
+        print("PSID: ", psId)
     p._close()
 
     print("-------------HTML READ INIT ----------------")
