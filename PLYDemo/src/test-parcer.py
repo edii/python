@@ -133,10 +133,16 @@ class Child(Parser, parceURL):
 
             cursor.execute("SELECT ps.id as ps_id FROM `parcer_sites` as ps WHERE domain = %(domain)s", {'domain': site})
             psOne = cursor.fetchone()
-            try:
+
+            if cursor.rowcount > 0:
                 ps_id = psOne[0]
-            except:
+            else:
                 ps_id = 0
+
+            #try:
+            #    ps_id = psOne[0]
+            #except:
+            #    ps_id = 0
 
             if not ps_id:
                 try:
